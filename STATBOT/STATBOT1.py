@@ -77,8 +77,8 @@ def maxi(data):
 # Calculate the difference between the smallest and largest datapoint.
 # maxi and mini functions could be replaced by `max/min(data)`.
 def rangeof(data):
-    print("The range is", maxi(data) - mini(data))
-    return maxi(data) - mini(data)
+    print("The range is", max(data.flatten()) - min(data.flatten()))
+    return max(data.flatten()) - min(data.flatten())
 
 
 # Any reason you need this function? Could just call `skew` directly.
@@ -139,30 +139,18 @@ def se(data):
 
 def dostats(data):
     """compute all descriptive statistics and show the results"""
-    SUM = summ(data)
-    MEAN = mean(data)
-    MAX = maxi(data)
-    MIN = mini(data)
+
+    SUM = np.sum(data)
+    MEAN = np.mean(data)
+    MAX = max(data.flatten())
+    MIN = min(data.flatten())
     SSE = sse_func(data)
     RANGEOF = rangeof(data)
-    VAR = var(data, sample=1)
-    SD = sd(data)
-    KURTOSIS = kurt(data)
-    SKEW = skw(data)
-    SE = sd(data) / math.sqrt(len(data))
-
-    # Could use:
-    # SUM = np.sum(data)
-    # MEAN = np.mean(data)
-    # MAX = max(data)
-    # MIN = min(data)
-    # SSE = sse_func(data)
-    # RANGEOF = rangeof(data)
-    # VAR = np.var(data, sample=1)
-    # SD = np.std(data)
-    # KURTOSIS = kurtosis(data)
-    # SKEW = skew(data)
-    # SE = np.std(data) / math.sqrt(len(data))
+    VAR = np.var(data)
+    SD = np.std(data)
+    KURTOSIS = kurtosis(data)
+    SKEW = skew(data)
+    SE = np.std(data) / math.sqrt(len(data))
 
     descriptives = [SUM, MEAN, MAX, MIN, SSE, RANGEOF, VAR, SD, SE, KURTOSIS, SKEW]
 
@@ -184,20 +172,13 @@ def save_results(descriptives):
         "Skew",
     ]
     print("/n------ STATBOT: DESCRIPTIVE STATS! ------")
+    saveFileName = fd.asksaveasfilename()
+    resultsFile = open(saveFileName, "w", encoding="utf-8")
+
     for statName, res in zip(statNames, descriptives):
-
-        saveFileName = fd.asksaveasfilename()
-
-        resultsFile = open(saveFileName, "w", encoding="utf-8")
-
         result = statName + "=" + str(res)
-
         resultsFile.write(result + "/n")  # You can add strings with +
-
-        # resultsFile.write("/n")
-
         DT = datetime.now()
-
         resultsFile.write(str(DT) + "/n")
 
     print("Results saved to", saveFileName)
