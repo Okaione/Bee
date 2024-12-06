@@ -132,14 +132,12 @@ def sd(data):
 # Calculate and return the standard error in the data set.
 def se(data):
     """standard error of the data"""
-    std_err = sd(data) / math.sqrt(len(data))
-    print("The standard error of the data set is", std_err)
-    return std_err
+    print("The standard error of the data set is", se(data))
+    return sd(data) / math.sqrt(len(data))
 
 
 def dostats(data):
     """compute all descriptive statistics and show the results"""
-
     SUM = np.sum(data)
     MEAN = np.mean(data)
     MAX = max(data.flatten())
@@ -148,14 +146,13 @@ def dostats(data):
     RANGEOF = rangeof(data)
     VAR = np.var(data)
     SD = np.std(data)
-    KURTOSIS = kurtosis(data)
-    SKEW = skew(data)
+    KURTOSIS = kurt(data)
+    SKEW = skw(data)
     SE = np.std(data) / math.sqrt(len(data))
 
     descriptives = [SUM, MEAN, MAX, MIN, SSE, RANGEOF, VAR, SD, SE, KURTOSIS, SKEW]
 
     return descriptives
-
 
 def save_results(descriptives):
     statNames = [
@@ -172,13 +169,20 @@ def save_results(descriptives):
         "Skew",
     ]
     print("/n------ STATBOT: DESCRIPTIVE STATS! ------")
-    saveFileName = fd.asksaveasfilename()
-    resultsFile = open(saveFileName, "w", encoding="utf-8")
-
     for statName, res in zip(statNames, descriptives):
+
+        saveFileName = fd.asksaveasfilename()
+
+        resultsFile = open(saveFileName, "w", encoding='utf-8')
+
         result = statName + "=" + str(res)
+
         resultsFile.write(result + "/n")  # You can add strings with +
+
+        # resultsFile.write("/n")
+
         DT = datetime.now()
+
         resultsFile.write(str(DT) + "/n")
 
     print("Results saved to", saveFileName)
@@ -187,7 +191,18 @@ def save_results(descriptives):
 
 
 def statbot():
-    """MAIN FUNCTION TO LINK STATBOT TOGETHER"""
+    """ DESCRIPTIVE ANALYSIS:
+    ~ Sum
+    ~ Mean
+    ~ Maximum
+    ~ Minimum
+    ~ SSE
+    ~ Range
+    ~ Variance
+    ~ Standard Deviation
+    ~ Standard Error
+    ~Kurtosis
+    ~Skew """
 
     # 1. Get the data to be analysed
     data = readdata()
@@ -207,3 +222,4 @@ def main() -> None:  # pragma: no cover
 
 if __name__ == "__main__":
     main()  # This lets you invoke the script by `python -m <script_name>`
+
