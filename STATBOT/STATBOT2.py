@@ -8,9 +8,9 @@ Created on Sun Dec  1 11:39:16 2024
 import numpy as np
 from tkinter import filedialog as fd
 import scipy.stats as stats
-from .STATBOT1 import (
-    statbot,
-)  # You can do `statbot()` to invoke STATBOT1's functionality.
+from STATBOT1 import statbot  # You can do `statbot()` to invoke STATBOT1's functionality.
+from datetime import datetime
+
 
 
 def getdata():
@@ -24,7 +24,13 @@ def getdata():
 
 
 def stats2():
-    """MAIN FUNCTION: Call this to run STATBOT2"""
+    """ OTHER ANALYSIS:
+    ~ Z-Score
+    ~ Standard Error
+    ~ T-Score
+    ~ R-Score
+    
+    3 EXIT MENU"""
 
     # Read data from a file; variable data is a numpy array
     data = getdata()
@@ -33,8 +39,7 @@ def stats2():
 
     # f-strings are pretty useful. I rewrote the below one as an example.
     # They print the same thing.
-    print("Data has", nrows, "cases", "and", ncols, "conditions")
-    print(f"Data has, {nrows} cases and {ncols} conditions")
+    print(f"Data has {nrows} cases and {ncols} conditions")
 
     # 2. Assign columns 0 and 1 of the data to variables
     # Uses numpy notation, ":" means "all the rows"
@@ -46,10 +51,11 @@ def stats2():
     tscore = stats.ttest_rel(data1, data2)
     # r value via scipy
     rscore = stats.pearsonr(data1, data2)
-    my_rval = rvalue(data1, data2)
     print("t = ", tscore, "df =", n - 1)
     print("r = ", rscore, "df =", n - 2)
-    print("My r = ", my_rval)
+    
+
+
 
 
 def zscore(data):
@@ -70,15 +76,14 @@ def SE(data):
     return np.std(data, ddof=1) / np.sqrt(len(data))
 
 
-def tvalue(data1, data2):
+def tscore(data1, data2):
     """Paired-samples t-value, data1 vs data2"""
     # Subtract data2 from data1 to get difference scores
-    diffs = data1 - data2  # <- This isn't used, can it be deleted?
     tvalue = stats.ttest_rel(data1, data2)
     return tvalue
 
 
-def rvalue(data1, data2):
+def rscore(data1, data2):
     """Compute r-value (Pearson Correlation)"""
     # zed score of both inputs
     zed1 = zscore(data1)
@@ -90,3 +95,75 @@ def rvalue(data1, data2):
     # return the sum/N
     r_val = sum_z / len(data1)
     return r_val
+
+def save_results(analysis):
+    statNames = [
+        "Z-Score"
+        "Standard Error"
+        "T-Score"
+        "R-Score",
+    ]
+    analysis = [zscore, SE, tscore, rscore]
+    print("/n------ STATBOT: DESCRIPTIVE STATS! ------")
+    for statName, res in zip(statNames, analysis):
+
+        saveFileName = fd.asksaveasfilename()
+
+        resultsFile = open(saveFileName, "w", encoding='utf-8')
+
+        result = statName + "=" + str(res)
+
+        resultsFile.write(result + "/n")  # You can add strings with +
+
+        # resultsFile.write("/n")
+
+        DT = datetime.now()
+
+        resultsFile.write(str(DT) + "/n")
+
+    print("Results saved to", saveFileName)
+
+    resultsFile.close()
+    
+def exitMenu():
+    """Exit the Menu """
+    #dummy function to provide the exit option in the menu
+    pass #do nothing
+    
+def menu():
+    print('n/STATBOT Functions')
+    all_functions = [statbot, stats2]
+    #make a Python dictionary of the demos, each demo is
+    #assigned an index starting at 1
+    menu_items = dict(enumerate(all_functions, start=1))
+    exit_code = len(all_functions) #exit is the last option on menu
+    
+    while True:
+        print('\nSTATBOT Functions ~ What type of analysis would you like to run?')
+        #Show the menu in the console
+        display_menu(menu_items)
+        #get selected index to menu item from user
+        selection = int(
+            input("Please enter your selection number: "))
+        
+        if selection > exit_code: #quit if input number is exit or greater
+           print('Goodbye dear friend!')
+           break #exit the while loop
+           
+        else: 
+            selected_function = menu_items[selection]  # Get the demo function
+            selected_function()  # add parentheses to call the demo
+            
+         
+                  
+           
+def display_menu(menu):
+    
+    for k,  functions in menu.items():
+        doc = functions.__doc__ #get the docstring of the function
+        print(k, doc)
+
+#The following will run the demo menu when the file is run
+if __name__ == "__main__":
+    menu()           
+
