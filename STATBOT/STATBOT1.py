@@ -8,6 +8,7 @@ import numpy as np
 
 # import tkinter to use Windows OFD
 from tkinter import filedialog as fd
+import tkinter as tk
 
 # import math to calculate descriptive statistics
 import math
@@ -186,17 +187,43 @@ def save_results(descriptives):
     resultsFile.close()
 
 
+def run_menu():
+    def do_nothing():
+        pass
+
+    root = tk.Tk()
+    menubar = tk.Menu(root)
+    filemenu = tk.Menu(menubar, tearoff=0)
+                            #    v Label on menu,        v Command to run on click
+    filemenu.add_command(label="Process Data", command=process)
+    filemenu.add_command(label="Whatever you fancy", command=do_nothing)
+    filemenu.add_separator()
+    filemenu.add_command(label="Exit", command=root.quit)
+    menubar.add_cascade(label="File", menu=filemenu)
+    root.config(menu=menubar)
+    root.mainloop()
+
+
+def process():
+    """Simple command to read data, calculate stats and save to file."""
+    data = readdata()   # A failed read means `data=None`
+    if data is not None:
+        results = dostats(data)
+    if results is not None:
+        save_results(results)
+
+
 def statbot():
     """MAIN FUNCTION TO LINK STATBOT TOGETHER"""
+    # # 1. Get the data to be analysed
+    # data = readdata()
 
-    # 1. Get the data to be analysed
-    data = readdata()
+    # # 2. Do descriptives on the data
+    # results = dostats(data)
 
-    # 2. Do descriptives on the data
-    results = dostats(data)
-
-    # 3. Save the results to a text file
-    save_results(results)
+    # # 3. Save the results to a text file
+    # save_results(results)
+    run_menu()  # run the menu loop
 
 
 def main() -> None:  # pragma: no cover
